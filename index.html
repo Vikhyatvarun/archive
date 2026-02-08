@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Project Archive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Verdana, Arial, sans-serif;
+            font-size: 10pt;
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        #header {
+            background-color: #cee3f8;
+            border-bottom: 1px solid #5f99cf;
+            padding: 8px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #header .header-left {
+            flex: 1;
+        }
+
+        #header h1 {
+            font-size: 18pt;
+            font-weight: normal;
+            color: #1a5490;
+            margin: 0;
+        }
+
+        #header .tagline {
+            font-size: 9pt;
+            color: #555;
+        }
+
+        #header .search-box {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #header .search-box input[type="text"] {
+            padding: 5px 8px;
+            border: 1px solid #5f99cf;
+            font-size: 9pt;
+            font-family: Verdana, Arial, sans-serif;
+            width: 300px;
+        }
+
+        #header .search-box input[type="submit"] {
+            padding: 5px 12px;
+            background-color: #5f99cf;
+            color: white;
+            border: 1px solid #4a7ba7;
+            cursor: pointer;
+            font-size: 9pt;
+            display: none; /* Hide submit button since we're doing real-time search */
+        }
+
+        #header .search-box input[type="submit"]:hover {
+            background-color: #4a7ba7;
+        }
+
+        #nav {
+            background-color: #eff7ff;
+            border-bottom: 1px solid #5f99cf;
+            padding: 5px 10px;
+            font-size: 9pt;
+        }
+
+        #nav a {
+            color: #369;
+            margin-right: 15px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .sidebar {
+            float: right;
+            width: 280px;
+            margin-left: 15px;
+        }
+
+        .sidebar-box {
+            background-color: #f7f7f7;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 9pt;
+        }
+
+        .sidebar-box h3 {
+            font-size: 11pt;
+            margin-bottom: 10px;
+            color: #1a5490;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .category-link {
+            display: block;
+            padding: 4px 0;
+            color: #369;
+            text-decoration: none;
+        }
+
+        .category-link:hover {
+            text-decoration: underline;
+        }
+
+        .main-content {
+            margin-right: 300px;
+        }
+
+        .project {
+            border: 1px solid #ccc;
+            background-color: #ffffff;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+
+        .project-header {
+            background-color: #eff7ff;
+            padding: 5px 8px;
+            margin: -10px -10px 10px -10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .project-category {
+            display: inline-block;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 8pt;
+            margin-right: 8px;
+        }
+
+        .project-date {
+            color: #888;
+            font-size: 8pt;
+        }
+
+        .project-title {
+            font-weight: bold;
+            font-size: 12pt;
+            margin: 8px 0;
+            color: #000;
+        }
+
+        .project-link {
+            color: #1a5490;
+            text-decoration: none;
+            font-size: 9pt;
+        }
+
+        .project-link:hover {
+            text-decoration: underline;
+        }
+
+        .project-link:visited{
+            color: #5a3f87;
+        }
+
+        .project-description {
+            margin: 10px 0;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        /* Expandable description styles */
+        .project-description.collapsed {
+            max-height: 4.5em; /* Show approximately 2 lines */
+            overflow: hidden;
+            position: relative;
+        }
+
+        .project-description.collapsed::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 1.5em;
+            background: linear-gradient(to bottom, transparent, white);
+        }
+
+        .expand-toggle {
+            color: #1a5490;
+            cursor: pointer;
+            font-size: 9pt;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 5px;
+            font-weight: normal;
+            display: none;
+            padding-bottom: 5px;
+        }
+
+        .expand-toggle:hover {
+            text-decoration: underline;
+        }
+
+        .project-tags {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            font-size: 8pt;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: #a0a0a0;
+            color: #ffffff;
+            padding: 2px 6px;
+            border-radius: 2px;
+            margin-right: 5px;
+            margin-bottom: 3px;
+        }
+
+        .stats {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 9pt;
+            text-align: center;
+        }
+
+        .stats strong {
+            color: #5f99cf;
+            font-size: 14pt;
+        }
+
+        .footer {
+            clear: both;
+            text-align: center;
+            padding: 20px;
+            font-size: 8pt;
+            color: #888;
+            border-top: 1px solid #ccc;
+            margin-top: 20px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+
+        .type-project{ background-color:#8b79c9}
+        .type-web{ background-color: #6b9bd1}
+        .type-found{ background-color: #daa138}
+        .type-save{ background-color: #52c0b7}
+        .type-thoughts{ background-color: #c4ce3c}
+        .type-ideas{ background-color: #6dbb6d}
+        .type-tools{ background-color: #d36a6a}
+        
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div class="header-left">
+            <h1>📦 Vikhyatvarun's Archive</h1>
+            <div class="tagline">Personal collection of projects, saves, and interesting finds</div>
+        </div>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="search projects..." oninput="searchProjects()">
+        </div>
+    </div>
+
+    <div id="nav">
+        <a onclick="filterProjects('all')">All Projects</a>
+        <a onclick="filterProjects('found')">Found</a>
+        <a onclick="filterProjects('web')">Web Development</a>
+        <a onclick="filterProjects('code')">Projects</a>
+        <a onclick="filterProjects('thoughts')">Thoughts</a>
+        <a onclick="filterProjects('tools')">Tools & Utilities</a>
+        <a onclick="filterProjects('saved')">Saved Resources</a>
+        <a onclick="filterProjects('ideas')">Ideas & Inspiration</a>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-box">
+                <h3>Quick Stats</h3>
+                <div class="stats">
+                    Total Entries:<br>
+                    <strong id="total-projects">0</strong>
+                </div>
+            </div>
+
+            <div class="sidebar-box">
+                <h3>Categories</h3>
+                <a href="#" class="category-link" onclick="filterProjects('found')">📦 Found</a>
+                <a href="#" class="category-link" onclick="filterProjects('web')">🌐 Web Development</a>
+                <a href="#" class="category-link" onclick="filterProjects('code')">💻 Projects</a>
+                <a href="#" class="category-link" onclick="filterProjects('thoughts')">📝 Thoughts</a>
+                <a href="#" class="category-link" onclick="filterProjects('tools')">🔧 Tools & Utilities</a>
+                <a href="#" class="category-link" onclick="filterProjects('saved')">💾 Saved Resources</a>
+                <a href="#" class="category-link" onclick="filterProjects('ideas')">💡 Ideas & Inspiration</a>
+            </div>
+
+            <div class="sidebar-box">
+                <h3>About</h3>
+                <p style="line-height: 1.4;">
+                    This is my personal archive of projects, interesting finds, and things I want to keep track of.
+                </p>
+                <p style="font-size:8pt; color:#555; margin-top:8px; line-height:1.4;">
+                    This site exists because things disappear.<br>
+                    Links die. Platforms vanish. This is my record.
+                </p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="projects">
+
+                <div class="project" data-category="code">
+                    <div class="project-header">
+                        <span class="project-category type-project">Projects</span>
+                        <span class="project-date">08 February 2026</span>
+                    </div>
+                    <div class="project-title">YT-DLoader (Python)</div>
+                    <div class="project-description">
+                        Made a python exe, with UI interface which download youtube video directly in your PC. Made using yt-dlp and ffmpeg libraries. Features include:
+                        <ul>
+                            <li>Download videos in various formats (mp4, mp3)</li>
+                            <li>Choose video quality (1080p, 720p, 480p, etc.)</li>
+                            <li>Simple GUI for easy use</li>
+                            <li>Ad Free downloads</li>
+                        </ul>
+                    </div>
+                    <span class="expand-toggle">Read more</span><br>
+                    Link 🔗 - <a href="https://vikhyatvarun.github.io/YT-DLoader" class="project-link">https://vikhyatvarun.github.io/YT-DLoader</a><br>
+                    Source code 🔗 - <a href="https://github.com/VikhyatVarun/YT-DLoader" class="project-link">https://github.com/VikhyatVarun/YT-DLoader</a>
+                    <div class="project-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">GUI</span>
+                        <span class="tag">YouTube Downloader</span>
+                    </div>
+                </div>
+
+                <div class="project" data-category="found">
+                    <div class="project-header">
+                        <span class="project-category type-found">Found</span>
+                        <span class="project-date">08 February 2026</span>
+                    </div>
+                    <div class="project-title">Banned Midori Anime [FOUND-2026-01]</div>
+                    <div class="project-description">
+                        Banned "Midori (1992)" Anime movie in country include in japan found on internet archive.org. This is a rare and controversial piece of animation that was banned in multiple countries due to its disturbing content. The film, also known as "Midori: Shoujo Tsubaki," is based on a manga and depicts the dark and tragic story of a young girl who joins a freak show circus after her mother's death. The anime is notorious for its graphic and unsettling imagery, which led to its prohibition in several regions. Finding it on archive.org is significant because many consider it lost media due to its limited release and widespread censorship.
+                        <br><img src="https://tse3.mm.bing.net/th/id/OIP.-mxS1CFlQNGtefOm3nK5LgAAAA?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Midori Anime Poster" style="max-width: 30%; margin-top: 10px; border: 1px solid #ccc; padding: 5px; display: block;"><br>
+                    </div>
+                    <span class="expand-toggle">Read more</span><br>
+                    Link 🔗 - <a href="https://archive.org/details/midori19921080premaster1080p24fpsvp9128kbitaac" class="project-link">https://archive.org/details/midori19921080premaster1080p24fpsvp9128kbitaac</a>
+                    <div class="project-tags">    
+                        <span class="tag">Anime</span>
+                        <span class="tag">Banned</span>
+                        <span class="tag">Archive</span>
+                    </div>
+                </div>
+
+                <div class="project" data-category="tools">
+                    <div class="project-header">
+                        <span class="project-category type-tools">Tools & Utilities</span>
+                        <span class="project-date">08 February 2026</span>
+                    </div>
+                    <div class="project-title">Free Internet Manager</div>
+                    <div class="project-description">
+                        Free Internet Manager is software that can download any media/files from internet in max internet speed with direct URL. It really helps when browser downloads are slow or interrupted. It also suppost torrent file downloading and have a built in torrent client. 
+                    </div>
+                    <span class="expand-toggle">Read more</span><br>
+                    Link 🔗 - <a href="https://www.freedownloadmanager.org" class="project-link">https://www.freedownloadmanager.org</a>
+                    <div class="project-tags">
+                        <span class="tag">Fast Downloader</span>
+                        <span class="tag">Free Software</span>
+                        <span class="tag">Torrent Client</span>
+                    </div>
+                </div>
+
+                <div class="project" data-category="saved">
+                    <div class="project-header">
+                        <span class="project-category type-save">Saved Resources</span>
+                        <span class="project-date">08 February 2026</span>
+                    </div>
+                    <div class="project-title">Uncensored ai</div>
+                    <div class="project-description">
+                        Uncensored.chat is a AI chatbot that provides uncensored and unfiltered responses. It is designed to bypass content restrictions and provide unrestricted access to AI-generated content.
+                    </div>
+                    <span class="expand-toggle">Read more</span><br>
+                    Link 🔗 - <a href="https://uncensored.chat/" class="project-link">https://uncensored.chat</a>
+                    <div class="project-tags">
+                        <span class="tag">Unfiltered</span>
+                        <span class="tag">Uncensored</span>
+                        <span class="tag">Ai</span>
+                    </div>
+                </div>
+
+                <div class="project" data-category="thoughts">
+                    <div class="project-header">
+                        <span class="project-category type-thoughts">Thoughts</span>
+                        <span class="project-date">08 February 2026</span>
+                    </div>
+                    <div class="project-title">Why we archive things</div>
+                    <div class="project-description">
+                        If it isn't saved locally, it doesn't exist. Relying on the cloud is a mistake. This website is my local backup. The internet is ephemeral - websites go down, services shut down, companies delete old content without warning. We've seen it happen over and over again. GeoCities gone. Google Reader gone. Countless blogs and forums lost to time. The only way to truly preserve something is to keep your own copy. That's why I maintain this archive. Every link, every project, every thought saved here is insurance against digital decay.
+                    </div>
+                    <span class="expand-toggle">Read more</span><br>
+                    <div class="project-tags">
+                        <span class="tag">Philosophy</span>
+                        <span class="tag">Archiving</span>
+                    </div>
+                </div>
+
+                <div class="project" data-category="ideas">
+                    <div class="project-header">
+                        <span class="project-category type-ideas">Ideas & Inspiration</span>
+                        <span class="project-date">08 February 2026</span>
+                    </div>
+                    <div class="project-title">My OS</div>
+                    <div class="project-description">
+                        I know it sound like Final Boss. But I will make my Operation System by compeletly made using AI (Probebly by cursor ai). No expecting much just want to see it working UI OS. Basic goal is to make it UI and do one tasks: Browse internet with a built in web browser. And maybe then will see how future we can go with AI.<br> This Idea is from a Youtube video of <a href="https://www.youtube.com/@WeeklyHow" class="project-link">"WeeklyHow youtube channel"</a> where a guy made his own OS using AI. I want to try it myself and see how far I can go with it. It will be a fun project to work on and see what kind of OS I can create with the help of AI.
+                    </div>
+                    <span class="expand-toggle">Read more</span><br>
+                    Video Link 🔗 - <a href="https://www.youtube.com/watch?v=q136bnvxHzI&t=31s" class="project-link">https://www.youtube.com/watch?v=q136bnvxHzI&t=31s</a>
+                    <div class="project-tags">
+                        <span class="tag">My OS</span>
+                        <span class="tag">Future Project</span>
+                    </div>
+                </div>
+
+                <div class="project" data-category="web">
+                    <div class="project-header">
+                        <span class="project-category type-web">Web Development</span>
+                        <span class="project-date">08 February 2026</span>
+                    </div>
+                    <div class="project-title">Retro Reddit Style Website</div>
+                    <div class="project-description">
+                        A retro-styled website inspired by old Reddit. Features classic form elements, simple CSS, and nostalgic 2000s web design aesthetic. Built with pure HTML/CSS/JS.
+                    </div>
+                    <span class="expand-toggle">Read more</span><br>
+                    Link 🔗 - <a href="https://vikhyatvarun.github.io/archive" class="project-link">https://vikhyatvarun.github.io/archive</a><br>
+                    Source code 🔗 - <a href="https://github.com/vikhyatvarun/archive" class="project-link">https://github.com/vikhyatvarun/archive</a>
+                    <div class="project-tags">
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Retro</span>
+                    </div>
+                </div>
+
+                <div class="project" data-category="web">
+                    <div class="project-header">
+                        <span class="project-category type-web">Web Development</span>
+                        <span class="project-date">08 February 2026</span>
+                    </div>
+                    <div class="project-title">Cursor-follow-insect</div>
+                    <div class="project-description">
+                        A fun web project where a cute insect follows the user's cursor around the screen. Built with HTML, CSS, and JavaScript. The insect has simple animations and changes direction based on cursor movement.
+                    </div>
+                    <span class="expand-toggle">Read more</span><br>
+                    Link 🔗 - <a href="https://vikhyatvarun.github.io/HTML-cursor-follow-insect" class="project-link">https://vikhyatvarun.github.io/HTML-cursor-follow-insect</a><br>
+                    Source code 🔗 - <a href="https://github.com/vikhyatvarun/HTML-cursor-follow-insect" class="project-link">https://github.com/vikhyatvarun/HTML-cursor-follow-insect</a>
+                    <div class="project-tags">
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Fun Project</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="footer">
+            Vikhyatvarun's Personal Archive © 2026
+        </div>
+    </div>
+
+    <script>
+        // Count and display total projects
+        function updateProjectCount() {
+            const totalProjects = document.querySelectorAll('.project').length;
+            document.getElementById('total-projects').textContent = totalProjects;
+        }
+
+        // Filter projects by category
+        function filterProjects(category) {
+            const projects = document.querySelectorAll('.project');
+            projects.forEach(project => {
+                if (category === 'all' || project.dataset.category === category) {
+                    project.style.display = 'block';
+                } else {
+                    project.style.display = 'none';
+                }
+            });
+        }
+
+        // Search projects in real-time
+        function searchProjects() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const projects = document.querySelectorAll('.project');
+            
+            projects.forEach(project => {
+                const title = project.querySelector('.project-title').textContent.toLowerCase();
+                const description = project.querySelector('.project-description').textContent.toLowerCase();
+                const category = project.querySelector('.project-category').textContent.toLowerCase();
+                const tags = Array.from(project.querySelectorAll('.tag')).map(tag => tag.textContent.toLowerCase()).join(' ');
+                const link = project.querySelector('.project-link').textContent.toLowerCase();
+                
+                // Combine all searchable text
+                const allText = title + ' ' + description + ' ' + category + ' ' + tags + ' ' + link;
+                
+                if (searchTerm === '' || allText.includes(searchTerm)) {
+                    project.style.display = 'block';
+                } else {
+                    project.style.display = 'none';
+                }
+            });
+        }
+
+        // Check if description is too long and needs expand/collapse
+        // Check if description is too long and needs expand/collapse
+        function initializeExpandableDescriptions() {
+            const projects = document.querySelectorAll('.project');
+    
+            projects.forEach(project => {
+                const description = project.querySelector('.project-description');
+                const toggleBtn = project.querySelector('.expand-toggle');
+        
+                // Check actual height instead of character count
+                // If content height is greater than 4.5em (3 lines), show toggle
+                const lineHeight = parseFloat(getComputedStyle(description).lineHeight);
+                const maxLines = 3;
+                const maxHeight = lineHeight * maxLines;
+        
+                if (description.scrollHeight > maxHeight) {
+                    description.classList.add('collapsed');
+                    toggleBtn.style.display = 'inline-block';
+            
+                // Add click event to toggle
+                toggleBtn.addEventListener('click', function() {
+                    if (description.classList.contains('collapsed')) {
+                        description.classList.remove('collapsed');
+                        toggleBtn.textContent = 'Read less';
+                    } else {
+                        description.classList.add('collapsed');
+                        toggleBtn.textContent = 'Read more';
+                }
+            });
+        }
+    });
+}
+        // Initialize on page load
+        updateProjectCount();
+        initializeExpandableDescriptions();
+    </script>
+</body>
+</html>
